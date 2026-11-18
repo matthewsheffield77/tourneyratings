@@ -1,0 +1,1 @@
+{"dependencies":{"express":"^4.21.2","pg":"^8.13.1"},"description":"TourneyRatings — youth hockey tournaments, rated by parents. (tourneyratings.com)","engines":{"node":"24.x"},"main":"server.js","name":"tourneyratings","private":true,"scripts":{"start":"node server.js"},"version":"1.0.0"}

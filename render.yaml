@@ -1,0 +1,38 @@
+# TourneyRatings -- Render Blueprint
+# Deploy: Render Dashboard -> New -> Blueprint -> connect this repo.
+# Creates the web service and the Postgres database, and wires
+# DATABASE_URL from the database into the web service automatically.
+#
+# Plans verified against Render's pricing/docs on 2026-11-17:
+#   - Web service "starter": $7/mo (0.5 CPU, 512 MB RAM), always on.
+#   - Postgres "basic-256mb": $6/mo compute (0.1 CPU, 256 MB RAM).
+#     NOTE: since Render's April 2026 pricing change, Postgres storage is
+#     billed separately at $0.30/GB/mo. A new Basic database starts with
+#     up to 15 GB of storage (~$4.50/mo), so budget roughly $17-18/mo
+#     total rather than $13. Still inside the $20-60/mo plan envelope.
+#   - Workspace: the free Hobby workspace is enough (the $13-18 above is
+#     service + database; bandwidth beyond the included 5 GB is
+#     $0.15/GB, a few dollars at launch traffic).
+
+services:
+  - type: web
+    name: tourneyratings
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tourneyratings-db
+          property: connectionString
+
+databases:
+  - name: tourneyratings-db
+    plan: basic-256mb
+    region: oregon
+    postgresMajorVersion: "16"
