@@ -332,7 +332,30 @@ app.post("/list-your-tournament", async (req, res, next) => {
 });
 
 app.get("/advertise", (req, res) => {
-  res.send(views.advertisePage());
+  res.send(views.advertisePage({ thanks: req.query.thanks === "1", error: null }));
+});
+
+app.post("/advertise", async (req, res, next) => {
+  try {
+    const b = req.body || {};
+    const name = cleanText(b.name, 60);
+    const email = cleanText(b.email, 120);
+    const message = cleanText(b.message, 4000);
+    if (!name || !email || !message) {
+      return res.status(400).send(
+        views.advertisePage({ thanks: false, error: "Please add your name or business, your email, and a few words about what you'd like to promote." })
+      );
+    }
+    await db.addSuggestion({ name, email, category: "Advertising inquiry", message });
+    res.redirect("/advertise?thanks=1");
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/founder", (req, res) => {
+  track("founder");
+  res.send(views.founderPage());
 });
 
 app.get("/suggestions", (req, res) => {
