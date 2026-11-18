@@ -29,6 +29,18 @@ body {
 
 .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
 
+.vet-badge {
+  display: inline-block;
+  background: var(--navy);
+  color: #fff;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
 /* Founder's story page */
 .story { max-width: 44em; }
 .story p { margin: 0 0 1.1em; }
