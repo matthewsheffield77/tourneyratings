@@ -49,7 +49,24 @@ function parseFilters(query) {
       : "date",
     myAges: multi(query.myAges).filter((a) => views.AGE_GROUPS.includes(a)),
     myLevels: multi(query.myLevels).filter((l) => views.LEVELS.includes(l)),
+    div: views.DIVISIONS.includes(String(query.div || "").trim())
+      ? String(query.div).trim()
+      : "",
+    myDivs: multi(query.myDivs).filter((d) => views.DIVISIONS.includes(d)),
   };
+}
+
+function selectedDivs(f) {
+  const out = new Set(f.myDivs);
+  if (f.div) out.add(f.div);
+  return [...out];
+}
+
+function matchesDivisions(t, f) {
+  const divs = selectedDivs(f);
+  if (!divs.length) return true;
+  const have = views.divisionTokens(t);
+  return divs.some((d) => have.has(d));
 }
 
 function matchesMyPlayer(t, f) {
@@ -60,6 +77,10 @@ function matchesMyPlayer(t, f) {
   if (f.myLevels.length) {
     const levels = views.levelTokens(t);
     if (!f.myLevels.some((l) => levels.has(l))) return false;
+  }
+  if (f.myDivs.length) {
+    const divs = views.divisionTokens(t);
+    if (!f.myDivs.some((d) => divs.has(d))) return false;
   }
   return true;
 }
@@ -73,9 +94,10 @@ function applyFilters(items, f) {
     if (f.state && t.state !== f.state) return false;
     if (f.age && !views.ageTokens(t).has(f.age)) return false;
     if (f.level && !views.levelTokens(t).has(f.level)) return false;
-    if (f.stp === "yes" && !t.stayToPlay) return false;
-    if (f.stp === "no" && t.stayToPlay) return false;
+    if (f.stp === "yes" && t.stayToPlay !== true) return false;
+    if (f.stp === "no" && t.stayToPlay !== false) return false;
     if (f.tag && !(t.experienceTags || []).includes(f.tag)) return false;
+    if (!matchesDivisions(t, f)) return false;
     if (!matchesMyPlayer(t, f)) return false;
     return true;
   });
@@ -160,6 +182,7 @@ app.get("/tournaments", async (req, res, next) => {
     const myPlayerData = items.map(({ t }) => ({
       ages: [...views.ageTokens(t)],
       levels: [...views.levelTokens(t)],
+      divs: [...views.divisionTokens(t)],
     }));
     const matchCount = items.filter(({ t }) => matchesMyPlayer(t, filters)).length;
     res.send(

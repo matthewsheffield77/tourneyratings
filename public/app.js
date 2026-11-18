@@ -23,20 +23,22 @@
   function update() {
     var ages = selected("myAges");
     var levels = selected("myLevels");
-    if (ages.length === 0 && levels.length === 0) {
+    var divs = selected("myDivs");
+    if (ages.length === 0 && levels.length === 0 && divs.length === 0) {
       countEl.textContent = "No player selected — showing everything.";
       return;
     }
     var n = tournaments.filter(function (t) {
       var ageOk = ages.length === 0 || ages.some(function (a) { return t.ages.indexOf(a) !== -1; });
       var levelOk = levels.length === 0 || levels.some(function (l) { return t.levels.indexOf(l) !== -1; });
-      return ageOk && levelOk;
+      var divOk = divs.length === 0 || divs.some(function (d) { return (t.divs || ["Youth"]).indexOf(d) !== -1; });
+      return ageOk && levelOk && divOk;
     }).length;
     countEl.textContent =
       n + " tournament" + (n === 1 ? "" : "s") + " match your player — hit “Apply filters” to narrow the list.";
   }
 
-  document.querySelectorAll('input[name="myAges"], input[name="myLevels"]').forEach(function (el) {
+  document.querySelectorAll('input[name="myAges"], input[name="myLevels"], input[name="myDivs"]').forEach(function (el) {
     el.addEventListener("change", update);
   });
 })();
