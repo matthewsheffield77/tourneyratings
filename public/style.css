@@ -41,6 +41,10 @@ body {
   text-transform: uppercase;
 }
 
+.poppy { vertical-align: -6px; }
+.poppy-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; }
+.poppy-note { font-style: italic; color: var(--muted); }
+
 /* Founder's story page */
 .story { max-width: 44em; }
 .story p { margin: 0 0 1.1em; }
