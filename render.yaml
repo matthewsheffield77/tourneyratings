@@ -23,6 +23,9 @@ services:
     buildCommand: npm install
     startCommand: npm start
     healthCheckPath: /healthz
+    domains:
+      - tourneyratings.com
+      - www.tourneyratings.com
     envVars:
       - key: NODE_ENV
         value: production
