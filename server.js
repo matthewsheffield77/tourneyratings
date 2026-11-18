@@ -137,12 +137,19 @@ function parseScore(v) {
   return Number.isInteger(n) && n >= 1 && n <= 5 ? n : null;
 }
 
+// Fire-and-forget page-view counting by section (feeds the admin stats).
+// A counting failure must never break a page, so errors are swallowed.
+function track(section) {
+  db.recordPageView(section).catch(() => {});
+}
+
 // --- Routes ------------------------------------------------------------------
 
 app.get("/healthz", (req, res) => res.json({ ok: true }));
 
 app.get("/", async (req, res, next) => {
   try {
+    track("home");
     const items = await tournamentsWithRatings();
     const rated = items
       .filter((x) => x.agg.overall != null)
@@ -174,6 +181,7 @@ app.get("/", async (req, res, next) => {
 
 app.get("/tournaments", async (req, res, next) => {
   try {
+    track("calendar");
     const items = await tournamentsWithRatings();
     const filters = parseFilters(req.query);
     const filtered = applyFilters(items, filters);
@@ -204,6 +212,7 @@ app.get("/tournaments/:id", async (req, res, next) => {
     const id = Number(req.params.id);
     const t = Number.isInteger(id) ? await db.getTournament(id) : null;
     if (!t) return res.status(404).send(views.notFoundPage());
+    track("tournament pages");
     const reviews = await db.listReviews(id);
     res.send(
       views.tournamentPage({
@@ -268,6 +277,7 @@ app.post("/tournaments/:id/reviews", async (req, res, next) => {
 
 app.get("/top-rated", async (req, res, next) => {
   try {
+    track("top-rated");
     const items = await tournamentsWithRatings();
     const rated = items
       .filter((x) => x.agg.overall != null)
@@ -346,6 +356,31 @@ app.post("/suggestions", async (req, res, next) => {
       message,
     });
     res.redirect("/suggestions?thanks=1");
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Private inbox + stats. 404s unless the ADMIN_KEY environment variable is
+// set AND passed exactly as ?key=... — the page simply does not exist to
+// anyone else. Nothing links here.
+app.get("/admin", async (req, res, next) => {
+  const key = process.env.ADMIN_KEY;
+  if (!key || req.query.key !== key) {
+    return res.status(404).send(views.notFoundPage());
+  }
+  try {
+    const [suggestions, submissions, pageViews, items] = await Promise.all([
+      db.listSuggestions(),
+      db.listOrganizerSubmissions(),
+      db.getPageViews(),
+      tournamentsWithRatings(),
+    ]);
+    const totals = {
+      tournaments: items.length,
+      reviews: items.reduce((n, x) => n + x.reviews.length, 0),
+    };
+    res.send(views.adminPage({ suggestions, submissions, pageViews, totals }));
   } catch (err) {
     next(err);
   }
