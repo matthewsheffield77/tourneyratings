@@ -164,3 +164,11 @@ button:hover, .button:hover { background: #a50d26; }
 .site-footer { margin-top: 44px; background: var(--navy); color: #cfe3f2; padding: 26px 0 34px; }
 .site-footer a { color: #fff; }
 .footer-links { margin: 6px 0; }
+
+/* Mobile: stack the hero search so the Search button sits full-width under
+   the input (easy one-handed tap); Apply filters goes full-width too. */
+@media (max-width: 800px) {
+  .hero-search { flex-direction: column; }
+  .hero-search button { width: 100%; }
+  .filter-actions button { width: 100%; }
+}
