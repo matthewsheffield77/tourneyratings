@@ -39,7 +39,8 @@ h2 { font-size: 1.35rem; margin: 1.4em 0 0.5em; color: var(--navy); }
 /* Header */
 .site-header { background: var(--navy); color: #fff; }
 .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding-top: 12px; padding-bottom: 12px; }
-.brand { color: #fff; text-decoration: none; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+.brand { color: #fff; text-decoration: none; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 9px; }
+.brand .puck { flex: none; }
 .brand span { color: #7fc4f0; }
 .main-nav { display: flex; gap: 18px; flex-wrap: wrap; }
 .main-nav a { color: #cfe3f2; text-decoration: none; font-weight: 600; font-size: 0.98rem; }
@@ -75,6 +76,9 @@ button:hover, .button:hover { background: #a50d26; }
 }
 .score-badge small { font-weight: 600; font-size: 0.75rem; opacity: 0.85; }
 .score-badge.none { background: #eef3f7; color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+.score-badge.high { background: #1d6b3c; }
+.score-badge.mid { background: #b97e10; }
+.score-badge.low { background: #b02a30; }
 
 .badge-row, .tag-row { display: inline-flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
 .badge { background: #eef3f7; color: var(--ink); border-radius: 999px; padding: 2px 10px; font-size: 0.82rem; font-weight: 600; }
@@ -164,6 +168,11 @@ button:hover, .button:hover { background: #a50d26; }
 .site-footer { margin-top: 44px; background: var(--navy); color: #cfe3f2; padding: 26px 0 34px; }
 .site-footer a { color: #fff; }
 .footer-links { margin: 6px 0; }
+
+/* Admin */
+.admin-table { border-collapse: collapse; background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.admin-table th, .admin-table td { text-align: left; padding: 8px 16px 8px 12px; border-bottom: 1px solid var(--line); }
+.admin-table tr:last-child td { border-bottom: 0; }
 
 /* Mobile: stack the hero search so the Search button sits full-width under
    the input (easy one-handed tap); Apply filters goes full-width too. */

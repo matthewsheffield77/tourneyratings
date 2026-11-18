@@ -1,7 +1,35 @@
 // TourneyRatings client script -- the only JavaScript on the site.
-// Job: keep the "Find tournaments for your player" match count live on
-// the tournament calendar as age/level checkboxes change. Filtering
+// Jobs: the tournament share button, and keeping the "Find tournaments
+// for your player" match count live on the calendar page. Filtering
 // itself is done server-side on submit, so the page works without JS.
+
+// Share button: native share sheet where available, otherwise copy the
+// link and say so on the button for a couple of seconds.
+(function () {
+  var btn = document.querySelector(".share-btn");
+  if (!btn) return;
+  btn.addEventListener("click", function () {
+    var url =
+      window.location.origin +
+      (btn.getAttribute("data-path") || window.location.pathname);
+    var title = btn.getAttribute("data-title") || document.title;
+    if (navigator.share) {
+      navigator.share({ title: title, url: url }).catch(function () {});
+      return;
+    }
+    function done() {
+      var old = btn.textContent;
+      btn.textContent = "Link copied!";
+      setTimeout(function () {
+        btn.textContent = old;
+      }, 2000);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, done);
+    }
+  });
+})();
+
 (function () {
   var dataEl = document.getElementById("myplayer-data");
   var countEl = document.getElementById("myplayer-count");
