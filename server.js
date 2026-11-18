@@ -302,6 +302,32 @@ app.get("/advertise", (req, res) => {
   res.send(views.advertisePage());
 });
 
+app.get("/suggestions", (req, res) => {
+  res.send(views.suggestionsPage({ error: null, thanks: req.query.thanks === "1" }));
+});
+
+app.post("/suggestions", async (req, res, next) => {
+  try {
+    const b = req.body || {};
+    const message = cleanText(b.message, 4000);
+    if (!message) {
+      return res
+        .status(400)
+        .send(views.suggestionsPage({ error: "Please write a few words so we know what you mean.", thanks: false }));
+    }
+    const category = views.SUGGESTION_CATEGORIES.includes(b.category) ? b.category : "Suggestion";
+    await db.addSuggestion({
+      name: cleanText(b.name, 60),
+      email: cleanText(b.email, 120),
+      category,
+      message,
+    });
+    res.redirect("/suggestions?thanks=1");
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.use((req, res) => {
   res.status(404).send(views.notFoundPage());
 });
