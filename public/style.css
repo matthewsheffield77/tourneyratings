@@ -41,6 +41,11 @@ body {
   text-transform: uppercase;
 }
 
+.qr-share { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; }
+.qr-share img { width: 150px; height: 150px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+.qr-share > div { flex: 1; min-width: 240px; }
+.qr-share h2 { margin-top: 0; }
+
 .poppy { vertical-align: -6px; }
 .poppy-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; }
 .poppy-note { font-style: italic; color: var(--muted); }
