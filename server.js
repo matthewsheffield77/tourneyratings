@@ -297,6 +297,14 @@ app.post("/tournaments/:id/reviews", async (req, res, next) => {
     const food = Object.keys(views.FOOD).includes(b.food)
       ? b.food
       : "not-reported";
+    const extraNight = Object.keys(views.EXTRA_NIGHT).includes(b.extraNight)
+      ? b.extraNight
+      : "not-reported";
+    const yr = parseInt(b.attendedYear, 10);
+    const attendedYear =
+      Number.isInteger(yr) && yr >= 2000 && yr <= new Date().getFullYear() + 1
+        ? yr
+        : null;
     await db.addReview(id, {
       reviewerName,
       teamAgeGroup: cleanText(b.teamAgeGroup, 60),
@@ -305,6 +313,8 @@ app.post("/tournaments/:id/reviews", async (req, res, next) => {
       videoPolicy,
       vendors,
       food,
+      extraNight,
+      attendedYear,
       comment: cleanText(b.comment, 4000),
     });
     res.redirect(`/tournaments/${id}?thanks=1`);
