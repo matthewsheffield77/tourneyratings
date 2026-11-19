@@ -291,12 +291,16 @@ app.post("/tournaments/:id/reviews", async (req, res, next) => {
     const videoPolicy = Object.keys(views.VIDEO_POLICIES).includes(b.videoPolicy)
       ? b.videoPolicy
       : "not-reported";
+    const rinkServices = Object.keys(views.RINK_SERVICES).includes(b.rinkServices)
+      ? b.rinkServices
+      : "not-reported";
     await db.addReview(id, {
       reviewerName,
       teamAgeGroup: cleanText(b.teamAgeGroup, 60),
       scores,
       wouldReturn: b.wouldReturn === "yes" ? true : b.wouldReturn === "no" ? false : null,
       videoPolicy,
+      rinkServices,
       comment: cleanText(b.comment, 4000),
     });
     res.redirect(`/tournaments/${id}?thanks=1`);
