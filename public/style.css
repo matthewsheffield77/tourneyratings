@@ -75,6 +75,7 @@ h2 { font-size: 1.35rem; margin: 1.4em 0 0.5em; color: var(--navy); }
 .header-inner { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding-top: 12px; padding-bottom: 12px; }
 .brand { color: #fff; text-decoration: none; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 9px; }
 .brand .puck { flex: none; }
+.brand .logo-photo { border-radius: 50%; object-fit: cover; }
 .brand span { color: #7fc4f0; }
 .main-nav { display: flex; gap: 18px; flex-wrap: wrap; }
 .main-nav a { color: #cfe3f2; text-decoration: none; font-weight: 600; font-size: 0.98rem; }
