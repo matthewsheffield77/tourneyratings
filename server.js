@@ -39,7 +39,7 @@ function parseFilters(query) {
   const multi = (v) => (v == null ? [] : Array.isArray(v) ? v : [v]).filter(Boolean);
   return {
     q: String(query.q || "").trim(),
-    state: String(query.state || "").trim().toUpperCase(),
+    state: String(query.state || "").trim(),
     age: String(query.age || "").trim(),
     level: String(query.level || "").trim(),
     stp: ["yes", "no"].includes(query.stp) ? query.stp : "",
@@ -206,16 +206,37 @@ app.get("/tournaments", async (req, res, next) => {
     track("calendar");
     const items = await tournamentsWithRatings();
     const filters = parseFilters(req.query);
-    const filtered = applyFilters(items, filters);
     // Every state is listed in the filter, even with no tournaments yet —
     // states with zero listings are labeled "no tournament listed".
     const US_STATES = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
+    // Canonicalize the location filter to the stored code's exact casing
+    // (US codes are uppercase; country names are not).
+    if (filters.state) {
+      const known = [...US_STATES, ...items.map(({ t }) => t.state)];
+      const canonical = known.find(
+        (c) => c.toUpperCase() === filters.state.toUpperCase()
+      );
+      if (canonical) filters.state = canonical;
+    }
+    const filtered = applyFilters(items, filters);
     const stateCounts = {};
     items.forEach(({ t }) => {
       stateCounts[t.state] = (stateCounts[t.state] || 0) + 1;
     });
-    const allCodes = [...new Set([...US_STATES, ...Object.keys(stateCounts)])].sort();
+    const CANADA = ["ON", "QC"];
+    const allCodes = [
+      ...new Set([
+        ...US_STATES,
+        ...Object.keys(stateCounts).filter((c) => CANADA.includes(c)),
+      ]),
+    ].sort();
     const states = allCodes.map((code) => ({ code, count: stateCounts[code] || 0 }));
+    // Any other code in the data is a country (international listings);
+    // those get their own group in the location filter.
+    const intlStates = Object.keys(stateCounts)
+      .filter((c) => !US_STATES.includes(c) && !CANADA.includes(c))
+      .sort()
+      .map((code) => ({ code, count: stateCounts[code] }));
     // My Player live-count data: token sets for every tournament.
     const myPlayerData = items.map(({ t }) => ({
       ages: [...views.ageTokens(t)],
@@ -227,6 +248,7 @@ app.get("/tournaments", async (req, res, next) => {
       views.tournamentsPage({
         items: filtered,
         states,
+        intlStates,
         filters,
         myPlayerData,
         matchCount,
