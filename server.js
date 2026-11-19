@@ -147,6 +147,28 @@ function track(section) {
 
 app.get("/healthz", (req, res) => res.json({ ok: true }));
 
+app.get("/robots.txt", (req, res) => {
+  res.type("text/plain").send(
+    "User-agent: *\nAllow: /\n\nSitemap: https://tourneyratings.com/sitemap.xml\n"
+  );
+});
+
+app.get("/sitemap.xml", async (req, res, next) => {
+  try {
+    const base = "https://tourneyratings.com";
+    const staticPaths = ["/", "/tournaments", "/top-rated", "/founder", "/advertise", "/list-your-tournament", "/suggestions"];
+    const tournaments = await db.listTournaments();
+    const urls = staticPaths.concat(tournaments.map((t) => `/tournaments/${t.id}`));
+    const xml =
+      '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+      urls.map((u) => `  <url><loc>${base}${u}</loc></url>`).join("\n") +
+      "\n</urlset>\n";
+    res.type("application/xml").send(xml);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.get("/", async (req, res, next) => {
   try {
     track("home");
