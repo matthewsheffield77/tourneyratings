@@ -306,11 +306,12 @@ app.post("/tournaments/:id/reviews", async (req, res, next) => {
       facilities: parseScore(b.facilities),
       value: parseScore(b.value),
     };
-    const reviewerName = cleanText(b.reviewerName, 60);
+    const reviewerName =
+      b.hideName === "yes" ? "Anonymous hockey parent" : cleanText(b.reviewerName, 60);
     if (!reviewerName || Object.values(scores).some((s) => s == null)) {
       return res
         .status(400)
-        .send(views.ratePage({ t, error: "Please add your name and a 1–5 score for all five criteria." }));
+        .send(views.ratePage({ t, error: "Please add a name to show on your review (or check the hide-my-name box) and a 1–5 score for all five criteria." }));
     }
     const videoPolicy = Object.keys(views.VIDEO_POLICIES).includes(b.videoPolicy)
       ? b.videoPolicy

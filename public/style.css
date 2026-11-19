@@ -245,3 +245,6 @@ main:focus { outline: none; }
 @media (prefers-reduced-motion: reduce) {
   .skip-link { transition: none; }
 }
+.rate-form .hint { display: block; font-weight: 400; color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+.rate-form .check-field { display: block; margin: 0 0 1rem; font-weight: 600; }
+.rate-form .check-field input { margin-right: 0.4rem; }
