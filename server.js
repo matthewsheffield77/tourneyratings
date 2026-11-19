@@ -294,6 +294,9 @@ app.post("/tournaments/:id/reviews", async (req, res, next) => {
     const vendors = Object.keys(views.VENDORS).includes(b.vendors)
       ? b.vendors
       : "not-reported";
+    const food = Object.keys(views.FOOD).includes(b.food)
+      ? b.food
+      : "not-reported";
     await db.addReview(id, {
       reviewerName,
       teamAgeGroup: cleanText(b.teamAgeGroup, 60),
@@ -301,6 +304,7 @@ app.post("/tournaments/:id/reviews", async (req, res, next) => {
       wouldReturn: b.wouldReturn === "yes" ? true : b.wouldReturn === "no" ? false : null,
       videoPolicy,
       vendors,
+      food,
       comment: cleanText(b.comment, 4000),
     });
     res.redirect(`/tournaments/${id}?thanks=1`);
