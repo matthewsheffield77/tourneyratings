@@ -147,6 +147,8 @@ function track(section) {
 
 app.get("/healthz", (req, res) => res.json({ ok: true }));
 
+app.get("/favicon.ico", (req, res) => res.redirect(302, "/images/logo-tr-puck.png"));
+
 app.get("/robots.txt", (req, res) => {
   res.type("text/plain").send(
     "User-agent: *\nAllow: /\n\nSitemap: https://tourneyratings.com/sitemap.xml\n"
