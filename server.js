@@ -158,7 +158,7 @@ app.get("/robots.txt", (req, res) => {
 app.get("/sitemap.xml", async (req, res, next) => {
   try {
     const base = "https://tourneyratings.com";
-    const staticPaths = ["/", "/tournaments", "/top-rated", "/useful-websites", "/founder", "/advertise", "/list-your-tournament", "/suggestions"];
+    const staticPaths = ["/", "/tournaments", "/top-rated", "/useful-websites", "/founder", "/accessibility", "/advertise", "/list-your-tournament", "/suggestions"];
     const tournaments = await db.listTournaments();
     const urls = staticPaths.concat(tournaments.map((t) => `/tournaments/${t.id}`));
     const xml =
@@ -428,6 +428,11 @@ app.post("/advertise", async (req, res, next) => {
 app.get("/founder", (req, res) => {
   track("founder");
   res.send(views.founderPage());
+});
+
+app.get("/accessibility", (req, res) => {
+  track("accessibility");
+  res.send(views.accessibilityPage());
 });
 
 app.get("/useful-websites", async (req, res, next) => {
