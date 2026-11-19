@@ -156,7 +156,7 @@ app.get("/robots.txt", (req, res) => {
 app.get("/sitemap.xml", async (req, res, next) => {
   try {
     const base = "https://tourneyratings.com";
-    const staticPaths = ["/", "/tournaments", "/top-rated", "/founder", "/advertise", "/list-your-tournament", "/suggestions"];
+    const staticPaths = ["/", "/tournaments", "/top-rated", "/useful-websites", "/founder", "/advertise", "/list-your-tournament", "/suggestions"];
     const tournaments = await db.listTournaments();
     const urls = staticPaths.concat(tournaments.map((t) => `/tournaments/${t.id}`));
     const xml =
@@ -386,6 +386,19 @@ app.post("/advertise", async (req, res, next) => {
 app.get("/founder", (req, res) => {
   track("founder");
   res.send(views.founderPage());
+});
+
+app.get("/useful-websites", async (req, res, next) => {
+  try {
+    track("useful-websites");
+    const tournaments = await db.listTournaments();
+    const outdoor = tournaments
+      .filter((t) => (t.experienceTags || []).some((tag) => tag === "Outdoor Ice" || tag === "Pond Hockey"))
+      .sort((a, b) => String(a.startDate).localeCompare(String(b.startDate)));
+    res.send(views.usefulWebsitesPage({ outdoor }));
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get("/suggestions", (req, res) => {
