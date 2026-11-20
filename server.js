@@ -44,9 +44,12 @@ function parseFilters(query) {
     level: String(query.level || "").trim(),
     stp: ["yes", "no"].includes(query.stp) ? query.stp : "",
     tag: String(query.tag || "").trim(),
-    sort: ["date", "fee-asc", "fee-desc", "rating"].includes(query.sort)
+    sort: ["date", "fee-asc", "fee-desc", "rating", "state", "name"].includes(query.sort)
       ? query.sort
       : "date",
+    month: /^(0[1-9]|1[0-2])$/.test(String(query.month || "").trim())
+      ? String(query.month).trim()
+      : "",
     myAges: multi(query.myAges).filter((a) => views.AGE_GROUPS.includes(a)),
     myLevels: multi(query.myLevels).filter((l) => views.LEVELS.includes(l)),
     div: views.DIVISIONS.includes(String(query.div || "").trim())
@@ -96,6 +99,7 @@ function applyFilters(items, f) {
     if (f.level && !views.levelTokens(t).has(f.level)) return false;
     if (f.stp === "yes" && t.stayToPlay !== true) return false;
     if (f.stp === "no" && t.stayToPlay !== false) return false;
+    if (f.month && String(t.startDate).slice(5, 7) !== f.month) return false;
     if (f.tag && !(t.experienceTags || []).includes(f.tag)) return false;
     if (!matchesDivisions(t, f)) return false;
     if (!matchesMyPlayer(t, f)) return false;
@@ -113,6 +117,15 @@ function applyFilters(items, f) {
       if (fb == null) return -1;
       return (fa - fb) * dir || byName(a, b);
     });
+  } else if (f.sort === "state") {
+    out.sort(
+      (a, b) =>
+        a.t.state.localeCompare(b.t.state) ||
+        a.t.city.localeCompare(b.t.city) ||
+        byName(a, b)
+    );
+  } else if (f.sort === "name") {
+    out.sort((a, b) => byName(a, b) || a.t.startDate.localeCompare(b.t.startDate));
   } else if (f.sort === "rating") {
     out.sort((a, b) => {
       const oa = a.agg.overall;
