@@ -100,6 +100,9 @@ button, .button {
 button:hover, .button:hover { background: #a50d26; }
 .button.ghost { background: #fff; color: var(--navy); border: 1px solid var(--navy); }
 .hero-stats { color: var(--muted); }
+.photo-band { background: linear-gradient(180deg, rgba(10,26,43,0) 42%, rgba(10,26,43,.78) 100%), url("/images/boards-action.jpg") center 32% / cover no-repeat; border-radius: 12px; min-height: 430px; display: flex; align-items: flex-end; padding: 22px; margin: 22px 0; }
+.photo-band-quote { color: #fff; font-size: 1.25rem; line-height: 1.45; font-style: italic; margin: 0; max-width: 640px; text-shadow: 0 1px 6px rgba(0,0,0,.45); }
+.photo-band-quote cite { display: block; font-size: .92rem; font-style: normal; margin-top: 8px; opacity: .88; }
 
 /* Cards */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; margin: 16px 0; }
