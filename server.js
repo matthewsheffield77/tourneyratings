@@ -44,7 +44,9 @@ function parseFilters(query) {
     age: String(query.age || "").trim(),
     level: String(query.level || "").trim(),
     stp: ["yes", "no"].includes(query.stp) ? query.stp : "",
-    tag: String(query.tag || "").trim(),
+    tag: views.FILTERABLE_TAGS.some((x) => x.name === String(query.tag || "").trim())
+      ? String(query.tag).trim()
+      : "",
     sort: ["date", "fee-asc", "fee-desc", "rating", "state", "name"].includes(query.sort)
       ? query.sort
       : "date",
