@@ -226,10 +226,13 @@ app.get("/tournaments", async (req, res, next) => {
     // Every state is listed in the filter, even with no tournaments yet —
     // states with zero listings are labeled "no tournament listed".
     const US_STATES = ["AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "DC", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"];
+    // All 13 Canadian provinces and territories, listed in the filter the
+    // same way as US states (zero-count ones included).
+    const CANADA = ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT"];
     // Canonicalize the location filter to the stored code's exact casing
     // (US codes are uppercase; country names are not).
     if (filters.state) {
-      const known = [...US_STATES, ...items.map(({ t }) => t.state)];
+      const known = [...US_STATES, ...CANADA, ...items.map(({ t }) => t.state)];
       const canonical = known.find(
         (c) => c.toUpperCase() === filters.state.toUpperCase()
       );
@@ -245,14 +248,13 @@ app.get("/tournaments", async (req, res, next) => {
     items.forEach(({ t }) => {
       stateCounts[t.state] = (stateCounts[t.state] || 0) + 1;
     });
-    const CANADA = ["ON", "QC"];
-    const allCodes = [
-      ...new Set([
-        ...US_STATES,
-        ...Object.keys(stateCounts).filter((c) => CANADA.includes(c)),
-      ]),
-    ].sort();
-    const states = allCodes.map((code) => ({ code, count: stateCounts[code] || 0 }));
+    const states = [...US_STATES]
+      .sort()
+      .map((code) => ({ code, count: stateCounts[code] || 0 }));
+    // Canada gets its own group, built exactly like the US group.
+    const canadaStates = [...CANADA]
+      .sort()
+      .map((code) => ({ code, count: stateCounts[code] || 0 }));
     // Any other code in the data is a country (international listings);
     // those get their own group in the location filter.
     const intlStates = Object.keys(stateCounts)
@@ -273,6 +275,7 @@ app.get("/tournaments", async (req, res, next) => {
         page,
         pageCount,
         states,
+        canadaStates,
         intlStates,
         filters,
         myPlayerData,
