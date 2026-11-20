@@ -129,7 +129,7 @@ function applyFilters(items, f) {
         byName(a, b)
     );
   } else if (f.sort === "name") {
-    out.sort((a, b) => byName(a, b) || a.t.startDate.localeCompare(b.t.startDate));
+    out.sort((a, b) => byName(a, b) || String(a.t.startDate || "").localeCompare(String(b.t.startDate || "")));
   } else if (f.sort === "rating") {
     out.sort((a, b) => {
       const oa = a.agg.overall;
@@ -140,7 +140,7 @@ function applyFilters(items, f) {
       return ob - oa || b.agg.count - a.agg.count || byName(a, b);
     });
   } else {
-    out.sort((a, b) => a.t.startDate.localeCompare(b.t.startDate) || byName(a, b));
+    out.sort((a, b) => String(a.t.startDate || "").localeCompare(String(b.t.startDate || "")) || byName(a, b));
   }
   return out;
 }
@@ -197,7 +197,7 @@ app.get("/", async (req, res, next) => {
       .sort((a, b) => b.agg.overall - a.agg.overall || b.agg.count - a.agg.count);
     const featured = items
       .filter((x) => x.t.featured)
-      .sort((a, b) => a.t.startDate.localeCompare(b.t.startDate))
+      .sort((a, b) => String(a.t.startDate || "").localeCompare(String(b.t.startDate || "")))
       .slice(0, 3);
     const bellItem = items.find((x) => x.t.id === 13);
     const bellReview = bellItem.reviews.find((r) => r.reviewerName === "Matthew S.") || bellItem.reviews[0];
