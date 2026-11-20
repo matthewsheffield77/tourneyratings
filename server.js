@@ -8,6 +8,7 @@ const path = require("path");
 const express = require("express");
 const db = require("./lib/db");
 const views = require("./lib/views");
+const EVENT_LINKS = require("./lib/event-links.json");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -293,6 +294,7 @@ app.get("/tournaments/:id", async (req, res, next) => {
     res.send(
       views.tournamentPage({
         t,
+        eventUrl: EVENT_LINKS[String(id)] || null,
         agg: views.aggregate(reviews),
         reviews,
         thanks: req.query.thanks === "1",
