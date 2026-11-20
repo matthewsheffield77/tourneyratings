@@ -45,6 +45,11 @@ body {
 .qr-share img { width: 150px; height: 150px; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
 .qr-share > div { flex: 1; min-width: 240px; }
 .qr-share h2 { margin-top: 0; }
+.ig-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin: 16px 0; }
+.ig-strip a { display: block; }
+.ig-strip img { width: 100%; height: auto; display: block; border: 1px solid var(--line); border-radius: 8px; }
+.shoutouts { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 12px; }
+.shoutouts li { border: 1px solid var(--line); border-radius: 8px; padding: 12px 16px; }
 
 .poppy { vertical-align: -6px; }
 .poppy-wrap { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; }
