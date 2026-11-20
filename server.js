@@ -50,6 +50,7 @@ function parseFilters(query) {
     month: /^(0[1-9]|1[0-2])$/.test(String(query.month || "").trim())
       ? String(query.month).trim()
       : "",
+    page: Math.max(1, Number.parseInt(query.page, 10) || 1),
     myAges: multi(query.myAges).filter((a) => views.AGE_GROUPS.includes(a)),
     myLevels: multi(query.myLevels).filter((l) => views.LEVELS.includes(l)),
     div: views.DIVISIONS.includes(String(query.div || "").trim())
@@ -234,6 +235,11 @@ app.get("/tournaments", async (req, res, next) => {
       if (canonical) filters.state = canonical;
     }
     const filtered = applyFilters(items, filters);
+    const PAGE_SIZE = 24;
+    const totalCount = filtered.length;
+    const pageCount = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+    const page = Math.min(filters.page, pageCount);
+    const pageItems = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
     const stateCounts = {};
     items.forEach(({ t }) => {
       stateCounts[t.state] = (stateCounts[t.state] || 0) + 1;
@@ -261,7 +267,10 @@ app.get("/tournaments", async (req, res, next) => {
     const matchCount = items.filter(({ t }) => matchesMyPlayer(t, filters)).length;
     res.send(
       views.tournamentsPage({
-        items: filtered,
+        items: pageItems,
+        totalCount,
+        page,
+        pageCount,
         states,
         intlStates,
         filters,
