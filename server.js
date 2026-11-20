@@ -181,7 +181,7 @@ app.get("/", async (req, res, next) => {
     const featured = items
       .filter((x) => x.t.featured)
       .sort((a, b) => a.t.startDate.localeCompare(b.t.startDate))
-      .slice(0, 6);
+      .slice(0, 3);
     const bellItem = items.find((x) => x.t.id === 13);
     const bellReview = bellItem.reviews.find((r) => r.reviewerName === "Matthew S.") || bellItem.reviews[0];
     const totals = {
