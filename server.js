@@ -407,6 +407,69 @@ app.post("/list-your-tournament", async (req, res, next) => {
       const n = parseInt(v, 10);
       return Number.isInteger(n) ? n : null;
     };
+    // Optional rating ("Rate it now" section of the form). All-or-nothing:
+    // if the submitter touches any part of the rating section, the five
+    // criteria scores and a display name (or the hide-my-name box) are
+    // required — the same rule as the tournament-page review form. A
+    // fully blank rating section stores no rating and changes nothing.
+    // (The rating selects for video policy / vendors / extra night always
+    // submit their default, so they never count as "touched" on their own.)
+    const ratingScores = {
+      level: parseScore(b.ratingLevel),
+      organization: parseScore(b.ratingOrganization),
+      stayToPlay: parseScore(b.ratingStayToPlay),
+      facilities: parseScore(b.ratingFacilities),
+      value: parseScore(b.ratingValue),
+    };
+    const ratingTouched =
+      [b.ratingLevel, b.ratingOrganization, b.ratingStayToPlay, b.ratingFacilities, b.ratingValue]
+        .some((v) => String(v || "").trim() !== "") ||
+      b.ratingHideName === "yes" ||
+      cleanText(b.ratingReviewerName, 60) !== "" ||
+      cleanText(b.ratingTeamAgeGroup, 60) !== "" ||
+      cleanText(b.ratingComment, 4000) !== "" ||
+      String(b.ratingAttendedYear || "") !== "" ||
+      String(b.ratingWouldReturn || "") !== "";
+    let rating = null;
+    if (ratingTouched) {
+      const reviewerName =
+        b.ratingHideName === "yes"
+          ? "Anonymous hockey parent"
+          : cleanText(b.ratingReviewerName, 60);
+      if (!reviewerName || Object.values(ratingScores).some((s) => s == null)) {
+        return res.status(400).send(
+          views.listTournamentPage({
+            error:
+              "Your rating is only partly filled in. To include it, please add a name to show on your review (or check the hide-my-name box) and a 1–5 score for all five criteria — or clear the rating section and submit the listing on its own.",
+            thanks: false,
+          })
+        );
+      }
+      const videoPolicy = Object.keys(views.VIDEO_POLICIES).includes(b.ratingVideoPolicy)
+        ? b.ratingVideoPolicy
+        : "not-reported";
+      const vendors = Object.keys(views.VENDORS).includes(b.ratingVendors)
+        ? b.ratingVendors
+        : "not-reported";
+      const extraNight = Object.keys(views.EXTRA_NIGHT).includes(b.ratingExtraNight)
+        ? b.ratingExtraNight
+        : "not-reported";
+      const yr = parseInt(b.ratingAttendedYear, 10);
+      rating = {
+        reviewerName,
+        teamAgeGroup: cleanText(b.ratingTeamAgeGroup, 60),
+        scores: ratingScores,
+        wouldReturn:
+          b.ratingWouldReturn === "yes" ? true : b.ratingWouldReturn === "no" ? false : null,
+        videoPolicy,
+        vendors,
+        food: "not-reported",
+        extraNight,
+        attendedYear:
+          Number.isInteger(yr) && yr >= 2000 && yr <= new Date().getFullYear() + 1 ? yr : null,
+        comment: cleanText(b.ratingComment, 4000),
+      };
+    }
     await db.addOrganizerSubmission({
       tournamentName,
       organizer: cleanText(b.organizer, 120),
@@ -426,6 +489,7 @@ app.post("/list-your-tournament", async (req, res, next) => {
       scheduleReleaseDays: intOrNull(b.scheduleReleaseDays),
       experienceTags: cleanText(b.experienceTags, 200),
       notes: cleanText(b.notes, 2000),
+      rating,
     });
     res.redirect("/list-your-tournament?thanks=1");
   } catch (err) {

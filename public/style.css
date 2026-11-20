@@ -198,6 +198,8 @@ button:hover, .button:hover { background: #a50d26; }
 .rate-form { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin: 16px 0; max-width: 760px; box-shadow: 0 1px 3px rgba(11, 42, 74, 0.07); }
 .score-field { margin: 14px 0; max-width: 560px; }
 .score-field .hint { font-weight: 400; color: var(--muted); font-size: 0.9rem; }
+.rating-optional { border-top: 2px solid var(--line); margin-top: 22px; padding-top: 4px; }
+.rating-optional h2 { font-size: 1.25rem; }
 .flash { background: var(--ok-bg); color: var(--ok-ink); border-radius: 10px; padding: 12px 16px; font-weight: 600; }
 .flash.error { background: #fdeaea; color: #8a1212; }
 
