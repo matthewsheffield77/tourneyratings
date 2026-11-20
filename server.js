@@ -426,9 +426,16 @@ app.post("/advertise", async (req, res, next) => {
   }
 });
 
-app.get("/founder", (req, res) => {
-  track("founder");
-  res.send(views.founderPage());
+app.get("/founder", async (req, res, next) => {
+  try {
+    track("founder");
+    const items = await tournamentsWithRatings();
+    const bellItem = items.find((x) => x.t.id === 13);
+    const bellReview = bellItem.reviews.find((r) => r.reviewerName === "Matthew S.") || bellItem.reviews[0];
+    res.send(views.founderPage({ bell: bellItem.t, bellAgg: bellItem.agg, bellReview }));
+  } catch (err) {
+    next(err);
+  }
 });
 
 app.get("/accessibility", (req, res) => {
