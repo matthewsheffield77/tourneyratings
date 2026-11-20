@@ -211,7 +211,9 @@ button:hover, .button:hover { background: #a50d26; }
 /* Footer */
 .site-footer { margin-top: 48px; background: var(--navy); color: #cfe3f2; padding: 36px 0 0; border-top: 3px solid var(--accent); }
 .site-footer a { color: #fff; }
-.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 28px; }
+.footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1.3fr; gap: 28px; }
+.footer-qr img { width: 84px; height: 84px; border-radius: 8px; background: #fff; }
+.footer-qr p { margin: 8px 0 0; }
 @media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr; gap: 20px; } }
 .footer-brand { color: #fff; font-size: 1.3rem; font-weight: 800; letter-spacing: -0.02em; display: inline-flex; align-items: center; gap: 9px; margin: 0 0 8px; }
 .footer-brand span { color: #7fc4f0; }
