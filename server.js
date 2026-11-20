@@ -239,7 +239,7 @@ app.get("/tournaments", async (req, res, next) => {
       if (canonical) filters.state = canonical;
     }
     const filtered = applyFilters(items, filters);
-    const PAGE_SIZE = 24;
+    const PAGE_SIZE = 20;
     const totalCount = filtered.length;
     const pageCount = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
     const page = Math.min(filters.page, pageCount);
