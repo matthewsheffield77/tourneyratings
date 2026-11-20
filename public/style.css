@@ -140,7 +140,9 @@ button:hover, .button:hover { background: #a50d26; }
 
 /* Leaderboard */
 .leaderboard { list-style: none; padding: 0; margin: 0; background: var(--card); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 1px 3px rgba(11, 42, 74, 0.07); }
-.leaderboard li { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+.leaderboard li { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-bottom: 1px solid var(--line); position: relative; }
+.leaderboard li:hover { background: rgba(11, 42, 74, 0.04); }
+.lb-main a::after { content: ""; position: absolute; inset: 0; }
 .leaderboard li:last-child { border-bottom: 0; }
 .rank { font-size: 1.3rem; font-weight: 800; color: var(--muted); width: 1.6em; text-align: center; }
 .lb-main { flex: 1; display: flex; flex-direction: column; }
