@@ -102,6 +102,12 @@ button:hover, .button:hover { background: #a50d26; }
 .hero-stats { color: var(--muted); }
 .founder-teaser { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin: 22px 0; }
 .founder-teaser h2 { margin-top: 0; }
+.howto-video { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin: 22px 0; box-shadow: 0 1px 3px rgba(11, 42, 74, 0.07); }
+.howto-video h2 { margin-top: 0; }
+.howto-video video { display: block; width: 100%; max-width: 320px; height: auto; margin: 14px auto 10px; border-radius: 8px; background: var(--navy); }
+.howto-video .fineprint { max-width: 46em; }
+.howto-video.compact { padding: 16px 20px; margin: 16px 0; }
+.howto-video.compact video { max-width: 260px; }
 .photo-band { background: linear-gradient(180deg, rgba(10,26,43,0) 42%, rgba(10,26,43,.78) 100%), url("/images/boards-action.jpg") center 32% / cover no-repeat; border-radius: 12px; min-height: 430px; display: flex; align-items: flex-end; padding: 22px; margin: 22px 0; }
 .photo-band-quote { color: #fff; font-size: 1.25rem; line-height: 1.45; font-style: italic; margin: 0; max-width: 640px; text-shadow: 0 1px 6px rgba(0,0,0,.45); }
 .photo-band-quote cite { display: block; font-size: .92rem; font-style: normal; margin-top: 8px; opacity: .88; }
