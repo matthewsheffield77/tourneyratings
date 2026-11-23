@@ -284,3 +284,10 @@ main:focus { outline: none; }
 
 /* Placeholder hints should read as examples, not entered values */
 ::placeholder { color: #b6bcc4; opacity: 1; }
+
+/* Currency converter (Useful Websites) */
+.fx-box { border: 1px solid #d8dee6; border-radius: 10px; padding: 1em 1.1em; margin: 0.8em 0 1.4em; max-width: 640px; }
+.fx-box label { display: inline-block; margin: 0.2em 0.9em 0.2em 0; font-weight: 600; }
+.fx-box input, .fx-box select { margin-left: 0.35em; padding: 0.35em 0.5em; font-size: 1em; }
+.fx-box input { width: 7em; }
+.fx-result { font-size: 1.25em; font-weight: 700; margin: 0.6em 0 0.2em; min-height: 1.2em; }
