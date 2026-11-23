@@ -29,11 +29,32 @@ async function tournamentsWithRatings() {
     if (!byTournament.has(r.tournamentId)) byTournament.set(r.tournamentId, []);
     byTournament.get(r.tournamentId).push(r);
   }
-  return tournaments.map((t) => ({
+  const items = tournaments.map((t) => ({
     t,
     reviews: byTournament.get(t.id) || [],
     agg: views.aggregate(byTournament.get(t.id) || []),
   }));
+  // Confidence-adjusted score, used only for ranking order (displayed scores
+  // stay the raw averages). Each tournament's own average is blended with the
+  // site-wide average, weighted by its review count: with few reviews the
+  // blend stays near the site average, and as reviews pile up the
+  // tournament's own average takes over. One glowing review can't outrank a
+  // proven track record.
+  const PRIOR_WEIGHT = 10;
+  const siteMean = reviews.length
+    ? reviews.reduce((acc, r) => acc + views.reviewOverall(r), 0) / reviews.length
+    : null;
+  for (const item of items) {
+    const n = item.agg.count;
+    if (n > 0 && siteMean != null) {
+      const own = item.reviews.reduce((acc, r) => acc + views.reviewOverall(r), 0) / n;
+      item.agg.adjusted =
+        (n / (n + PRIOR_WEIGHT)) * own + (PRIOR_WEIGHT / (n + PRIOR_WEIGHT)) * siteMean;
+    } else {
+      item.agg.adjusted = item.agg.overall;
+    }
+  }
+  return items;
 }
 
 function parseFilters(query) {
@@ -132,8 +153,8 @@ function applyFilters(items, f) {
     out.sort((a, b) => byName(a, b) || String(a.t.startDate || "").localeCompare(String(b.t.startDate || "")));
   } else if (f.sort === "rating") {
     out.sort((a, b) => {
-      const oa = a.agg.overall;
-      const ob = b.agg.overall;
+      const oa = a.agg.adjusted;
+      const ob = b.agg.adjusted;
       if (oa == null && ob == null) return byName(a, b);
       if (oa == null) return 1; // unrated always last
       if (ob == null) return -1;
@@ -194,7 +215,7 @@ app.get("/", async (req, res, next) => {
     const items = await tournamentsWithRatings();
     const rated = items
       .filter((x) => x.agg.overall != null)
-      .sort((a, b) => b.agg.overall - a.agg.overall || b.agg.count - a.agg.count);
+      .sort((a, b) => b.agg.adjusted - a.agg.adjusted || b.agg.count - a.agg.count);
     const featured = items
       .filter((x) => x.t.featured)
       .sort((a, b) => String(a.t.startDate || "").localeCompare(String(b.t.startDate || "")))
@@ -383,7 +404,7 @@ app.get("/top-rated", async (req, res, next) => {
     const items = await tournamentsWithRatings();
     const rated = items
       .filter((x) => x.agg.overall != null)
-      .sort((a, b) => b.agg.overall - a.agg.overall || b.agg.count - a.agg.count || a.t.name.localeCompare(b.t.name));
+      .sort((a, b) => b.agg.adjusted - a.agg.adjusted || b.agg.count - a.agg.count || a.t.name.localeCompare(b.t.name));
     res.send(views.topRatedPage({ rated }));
   } catch (err) {
     next(err);
