@@ -630,7 +630,22 @@ app.get("/admin", async (req, res, next) => {
       tournaments: items.length,
       reviews: items.reduce((n, x) => n + x.reviews.length, 0),
     };
-    res.send(views.adminPage({ suggestions, submissions, pageViews, totals }));
+    res.send(views.adminPage({ suggestions, submissions, pageViews, totals, adminKey: key }));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Discard one organizer submission (e.g. a test or spam entry). Same
+// ADMIN_KEY gate as the admin page; redirects back to the inbox.
+app.post("/admin/submissions/:id/delete", async (req, res, next) => {
+  const key = process.env.ADMIN_KEY;
+  if (!key || req.query.key !== key) {
+    return res.status(404).send(views.notFoundPage());
+  }
+  try {
+    await db.deleteOrganizerSubmission(Number(req.params.id));
+    res.redirect(303, `/admin?key=${encodeURIComponent(key)}`);
   } catch (err) {
     next(err);
   }
